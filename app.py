@@ -33,7 +33,7 @@ def main():
 
         # create embeddings
         openai_api_key = st.secrets['openai']["OPENAI_API_KEY"]
-        embeddings = OpenAIEmbeddings(api_key=openai_api_key)
+        embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
         knowledge_base = FAISS.from_texts(chunks, embeddings)
 
         # show user input
@@ -41,7 +41,7 @@ def main():
         if user_question:
             docs = knowledge_base.similarity_search(user_question)
 
-            llm = OpenAI(api_key=openai_api_key)
+            llm = OpenAI(openai_api_key=openai_api_key)
             chain = load_qa_chain(llm, chain_type="stuff")
             with get_openai_callback() as cb:
                 response = chain.run(input_documents=docs, question=user_question)
@@ -52,3 +52,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
