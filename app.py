@@ -6,6 +6,7 @@ from langchain.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain.llms import OpenAI
 from langchain.callbacks import get_openai_callback
+import tempfile
 
 @st.cache_data(show_spinner=False)
 def extract_text_from_pdf(pdf):
@@ -39,9 +40,12 @@ def get_answer_for_question(knowledge_base, openai_api_key, user_question):
     except Exception as e:
         return None, str(e)
 
-def pharavi(user_question):
-    # Placeholder: Add functionality to call ChatGPT here and get a response
-    return f"Pharavi's input: {user_question}"
+def display_pdf(pdf):
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+        tmp_file.write(pdf.getvalue())
+        pdf_path = tmp_file.name
+    
+    st.markdown(f'<iframe src="file://{pdf_path}" width="700" height="400"></iframe>', unsafe_allow_html=True)
 
 def main():
     st.set_page_config(page_title="Ravi PDF Reader")
@@ -60,9 +64,9 @@ def main():
             # Create two columns
             col1, col2 = st.columns(2)
             
-            # Display PDF content in the first column
+            # Display PDF in the first column
             col1.subheader("PDF Content")
-            col1.write(text)
+            display_pdf(pdf)
 
             # Allow user to ask questions in the second column
             col2.subheader("Ask a question about your PDF:")
@@ -73,10 +77,6 @@ def main():
                     col2.error(f"Error fetching the answer: {error}")
                 elif response:
                     col2.write(f"From PDF: {response}")
-                    # Optionally, also ask ChatGPT for supplementary info
-                    pharavi_response = ask_pharavi(user_question)
-                    col2.write(pharavi_response)
-
 
 if __name__ == '__main__':
     main()
