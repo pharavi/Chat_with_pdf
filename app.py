@@ -1,21 +1,19 @@
 import streamlit as st
-from PyPDF2 import PdfFileReader
+from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain.llms import OpenAI
 from langchain.callbacks import get_openai_callback
-import os
 
 @st.cache(show_spinner=False)  # Cache to avoid repeated computations
 def extract_text_from_pdf(pdf):
     try:
-        pdf_reader = PdfFileReader(pdf)
-        return ''.join(page.extract_text() for page in pdf_reader.pages)
+        pdf_reader = PdfReader(pdf)
+        return ''.join(page.extract_text() for page in pdf_reader.pages), None
     except Exception as e:
-        st.error(f"Failed to read the PDF. Error: {str(e)}")
-        return None
+        return None, str(e)
 
 @st.cache(show_spinner=False)
 def generate_embeddings(text, openai_api_key):
@@ -37,10 +35,9 @@ def get_answer_for_question(knowledge_base, openai_api_key, user_question):
         with get_openai_callback() as cb:
             response = chain.run(input_documents=docs, question=user_question)
             print(cb)
-        return response
+        return response, None
     except Exception as e:
-        st.error(f"Error fetching the answer: {str(e)}")
-        return None
+        return None, str(e)
 
 def ask_chatgpt(user_question):
     # Placeholder: Add functionality to call ChatGPT here and get a response
@@ -53,8 +50,10 @@ def main():
     pdf = st.file_uploader("Upload your PDF", type="pdf")
     
     if pdf is not None:
-        text = extract_text_from_pdf(pdf)
-        if text:
+        text, error = extract_text_from_pdf(pdf)
+        if error:
+            st.error(f"Failed to read the PDF. Error: {error}")
+        elif text:
             openai_api_key = st.secrets['openai']["OPENAI_API_KEY"]
             knowledge_base = generate_embeddings(text, openai_api_key)
             
@@ -69,8 +68,10 @@ def main():
             col2.subheader("Ask a question about your PDF:")
             user_question = col2.text_input("")
             if user_question:
-                response = get_answer_for_question(knowledge_base, openai_api_key, user_question)
-                if response:
+                response, error = get_answer_for_question(knowledge_base, openai_api_key, user_question)
+                if error:
+                    col2.error(f"Error fetching the answer: {error}")
+                elif response:
                     col2.write(f"From PDF: {response}")
                     # Optionally, also ask ChatGPT for supplementary info
                     chatgpt_response = ask_chatgpt(user_question)
