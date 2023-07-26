@@ -7,7 +7,7 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.llms import OpenAI
 from langchain.callbacks import get_openai_callback
 
-@st.cache(show_spinner=False)  # Cache to avoid repeated computations
+@st.cache_data(show_spinner=False)
 def extract_text_from_pdf(pdf):
     try:
         pdf_reader = PdfReader(pdf)
@@ -15,7 +15,7 @@ def extract_text_from_pdf(pdf):
     except Exception as e:
         return None, str(e)
 
-@st.cache(show_spinner=False)
+@st.cache_data(show_spinner=False)
 def generate_embeddings(text, openai_api_key):
     text_splitter = CharacterTextSplitter(
         separator="\n",
@@ -58,7 +58,7 @@ def main():
             knowledge_base = generate_embeddings(text, openai_api_key)
             
             # Create two columns
-            col1, col2 = st.beta_columns(2)
+            col1, col2 = st.columns(2)
             
             # Display PDF content in the first column
             col1.subheader("PDF Content")
