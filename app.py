@@ -1,5 +1,5 @@
 import streamlit as st
-from PyPDF2 import PdfReader, PdfFileError
+from PyPDF2 import PdfFileReader, PdfFileError
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
@@ -11,7 +11,7 @@ import os
 @st.cache(show_spinner=False)  # Cache to avoid repeated computations
 def extract_text_from_pdf(pdf):
     try:
-        pdf_reader = PdfReader(pdf)
+        pdf_reader = PdfFileReader(pdf)
         return ''.join(page.extract_text() for page in pdf_reader.pages)
     except PdfFileError:
         st.error("Failed to read the PDF. Please upload a valid PDF.")
