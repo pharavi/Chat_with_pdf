@@ -39,9 +39,9 @@ def get_answer_for_question(knowledge_base, openai_api_key, user_question):
     except Exception as e:
         return None, str(e)
 
-def ask_chatgpt(user_question):
+def pharavi(user_question):
     # Placeholder: Add functionality to call ChatGPT here and get a response
-    return f"ChatGPT says: {user_question}"
+    return f"Pharavi's input: {user_question}"
 
 def main():
     st.set_page_config(page_title="Ravi PDF Reader")
@@ -74,8 +74,9 @@ def main():
                 elif response:
                     col2.write(f"From PDF: {response}")
                     # Optionally, also ask ChatGPT for supplementary info
-                    chatgpt_response = ask_chatgpt(user_question)
-                    col2.write(chatgpt_response)
+                    pharavi_response = ask_pharavi(user_question)
+                    col2.write(pharavi_response)
+
 
 if __name__ == '__main__':
     main()
