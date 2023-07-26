@@ -38,14 +38,6 @@ def get_answer_for_question(knowledge_base, openai_api_key, user_question):
     except Exception as e:
         return None, str(e)
 
-def display_pdf(pdf):
-    with open("temp_pdf.pdf", "wb") as f:
-        f.write(pdf.getvalue())
-
-    # Embed the PDF using local file URL
-    pdf_embed = f'<iframe src="/media/temp_pdf.pdf" width="100%" height="400"></iframe>'
-    st.components.v1.html(pdf_embed, height=500)
-
 def main():
     st.set_page_config(page_title="Pharavi PDF Reader")
     st.header("Chat with your PDF 💬")
@@ -63,13 +55,13 @@ def main():
             # Create two columns
             col1, col2 = st.columns(2)
             
-            # Display PDF in the first column
+            # Display download button for PDF in the first column
             col1.subheader("PDF Content")
-            display_pdf(pdf)
+            col1.download_button("Open PDF", pdf.getvalue(), "document.pdf", mime="application/pdf")
 
             # Allow user to ask questions in the second column
             col2.subheader("Ask a question about your PDF:")
-            user_question = col2.text_input("")
+            user_question = col2.text_input("Enter your question")
             if user_question:
                 response, error = get_answer_for_question(knowledge_base, openai_api_key, user_question)
                 if error:
