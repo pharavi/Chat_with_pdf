@@ -42,11 +42,11 @@ def get_answer_for_question(knowledge_base, openai_api_key, user_question):
 
 def display_pdf(pdf):
     base64_pdf = base64.b64encode(pdf.getvalue()).decode('utf-8')
-    pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="700" height="400" type="application/pdf">'
-    st.markdown(pdf_display, unsafe_allow_html=True)
+    pdf_embed = f'<object data="data:application/pdf;base64,{base64_pdf}" type="application/pdf" width="700px" height="400px"></object>'
+    st.markdown(pdf_embed, unsafe_allow_html=True)
 
 def main():
-    st.set_page_config(page_title="Ravi PDF Reader")
+    st.set_page_config(page_title="Pharavi PDF Reader")
     st.header("Chat with your PDF 💬")
 
     pdf = st.file_uploader("Upload your PDF", type="pdf")
