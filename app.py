@@ -6,7 +6,7 @@ from langchain.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain.llms import OpenAI
 from langchain.callbacks import get_openai_callback
-import tempfile
+import base64
 
 @st.cache_data(show_spinner=False)
 def extract_text_from_pdf(pdf):
@@ -41,11 +41,9 @@ def get_answer_for_question(knowledge_base, openai_api_key, user_question):
         return None, str(e)
 
 def display_pdf(pdf):
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
-        tmp_file.write(pdf.getvalue())
-        pdf_path = tmp_file.name
-    
-    st.markdown(f'<iframe src="file://{pdf_path}" width="700" height="400"></iframe>', unsafe_allow_html=True)
+    base64_pdf = base64.b64encode(pdf.getvalue()).decode('utf-8')
+    pdf_display = f'<embed src="data:application/pdf;base64,{base64_pdf}" width="700" height="400" type="application/pdf">'
+    st.markdown(pdf_display, unsafe_allow_html=True)
 
 def main():
     st.set_page_config(page_title="Ravi PDF Reader")
