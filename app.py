@@ -6,9 +6,8 @@ from langchain.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain.llms import OpenAI
 from langchain.callbacks import get_openai_callback
-import base64
+import os
 
-@st.cache_data(show_spinner=False)
 def extract_text_from_pdf(pdf):
     try:
         pdf_reader = PdfReader(pdf)
@@ -16,7 +15,6 @@ def extract_text_from_pdf(pdf):
     except Exception as e:
         return None, str(e)
 
-@st.cache_data(show_spinner=False)
 def generate_embeddings(text, openai_api_key):
     text_splitter = CharacterTextSplitter(
         separator="\n",
@@ -41,9 +39,12 @@ def get_answer_for_question(knowledge_base, openai_api_key, user_question):
         return None, str(e)
 
 def display_pdf(pdf):
-    base64_pdf = base64.b64encode(pdf.getvalue()).decode('utf-8')
-    pdf_embed = f'<object data="data:application/pdf;base64,{base64_pdf}" type="application/pdf" width="700px" height="400px"></object>'
-    st.markdown(pdf_embed, unsafe_allow_html=True)
+    with open("temp_pdf.pdf", "wb") as f:
+        f.write(pdf.getvalue())
+
+    # Embed the PDF using local file URL
+    pdf_embed = f'<iframe src="/media/temp_pdf.pdf" width="100%" height="400"></iframe>'
+    st.components.v1.html(pdf_embed, height=500)
 
 def main():
     st.set_page_config(page_title="Pharavi PDF Reader")
@@ -74,7 +75,7 @@ def main():
                 if error:
                     col2.error(f"Error fetching the answer: {error}")
                 elif response:
-                    col2.write(f"From PDF: {response}")
+                    col2.write(f"Pharavi says: {response}")
 
 if __name__ == '__main__':
     main()
