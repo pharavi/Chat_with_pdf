@@ -60,14 +60,14 @@ def main():
             col1.download_button("Open PDF", pdf.getvalue(), "document.pdf", mime="application/pdf")
 
             # Allow user to ask questions in the second column
-            col2.subheader("Ask a question about your PDF:")
+            col2.subheader("Ask Sandstorm anything:")
             user_question = col2.text_input("Enter your question")
             if user_question:
                 response, error = get_answer_for_question(knowledge_base, openai_api_key, user_question)
                 if error:
                     col2.error(f"Error fetching the answer: {error}")
                 elif response:
-                    col2.write(f"Pharavi says: {response}")
+                    col2.write(f"Sandstorm says: {response}")
 
 if __name__ == '__main__':
     main()
