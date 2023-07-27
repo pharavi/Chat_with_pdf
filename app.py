@@ -40,7 +40,7 @@ def get_answer_for_question(knowledge_base, openai_api_key, user_question):
 
 def main():
     st.set_page_config(page_title="Pharavi PDF Reader")
-    st.header("Chat with your PDF 💬")
+    st.header("Chat with Sandstorm 💬")
 
     pdf = st.file_uploader("Upload your PDF", type="pdf")
     
